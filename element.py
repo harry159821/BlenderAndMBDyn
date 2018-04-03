@@ -79,7 +79,8 @@ class Base(Operator):
                         ob.select = True
                     if element.objects and element.objects[0].name in context.scene.objects:
                         context.scene.objects.active = element.objects[0]
-                    element.remesh()
+                    print("[LOG]OLD Script element.remesh() Here")
+                    # element.remesh()
         bpy.types.Scene.element_index = bpy.props.IntProperty(default=-1, update=select_and_activate)
     @classmethod
     def delete_list(self):
