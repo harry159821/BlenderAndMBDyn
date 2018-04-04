@@ -79,8 +79,13 @@ class Base(Operator):
                         ob.select = True
                     if element.objects and element.objects[0].name in context.scene.objects:
                         context.scene.objects.active = element.objects[0]
-                    print("[LOG]OLD Script element.remesh() Here")
-                    # element.remesh()
+                    print("element.remesh()")
+                    if not element.objects:
+                        element.remesh()
+                    if not hasattr(element, "remeshed"):
+                        element.remeshed = True
+                        element.remesh()
+
         bpy.types.Scene.element_index = bpy.props.IntProperty(default=-1, update=select_and_activate)
     @classmethod
     def delete_list(self):
@@ -388,7 +393,8 @@ class InLine(Joint):
         write_vector(f, localV_1)
         f.write(";\n")
     def remesh(self):
-        RhombicPyramid(self.objects[0])
+        print("[LOG]RhombicPyramid(self.objects[0]) Called Here")
+        # RhombicPyramid(self.objects[0])
 
 class InLineOperator(Base):
     bl_label = "In line"
@@ -579,7 +585,8 @@ class TotalJoint(Joint):
                 f.write(",\n\t\t\t\tinactive")
         f.write(";\n")
     def remesh(self):
-        Sphere(self.objects[0])
+        print("[LOG]Sphere(self.objects[0]) Called Here")
+        # Sphere(self.objects[0])
 
 class TotalJointOperator(Base):
     bl_label = "Total joint"
@@ -847,7 +854,10 @@ class Body(Entity):
             self.write_node(f, 0, orientation=True, o_label="inertial")
         f.write(";\n")
     def remesh(self):
-        Ellipsoid(self.objects[0], self.mass, self.inertial_matrix)
+        if "cam" in self.safe_name().lower():
+            Cylinder(self.objects[0])
+        else:
+            Ellipsoid(self.objects[0], self.mass, self.inertial_matrix)
 
 class BodyMass(bpy.types.PropertyGroup, BPY.ValueMode):
     value = bpy.props.FloatProperty(min=-9.9e10, max=9.9e10, step=100, precision=6, description="Mass of the body")

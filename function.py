@@ -195,15 +195,6 @@ class LinearOperator(Base):
 
 klasses[LinearOperator.bl_label] = LinearOperator
 
-class CubicNaturalSpline(Entity):
-    def write(self, f):
-        f.write("scalar function: \"" + self.name + "\", cubicspline")
-        if not self.extrapolate:
-            f.write(", do not extrapolate")
-        for i in range(self.N):
-            f.write(",\n\t\t" + BPY.FORMAT(self.X[i]) + ", " + BPY.FORMAT(self.Y[i]))
-        f.write(";\n")
-
 class Multiple(Base):
     extrapolate = bpy.props.BoolProperty(name="Extrapolate", default=True)
     N = bpy.props.IntProperty(name="Number of points", min=2, max=50, description="", default=2)
@@ -244,12 +235,21 @@ class Multiple(Base):
     def check(self, context):
         return (self.basis != self.N) or True in [x.check(context) for x in self.X] + [y.check(context) for y in self.Y]
 
+class CubicNaturalSpline(Entity):
+    def write(self, f):
+        f.write("scalar function: \"" + self.name + "\", cubicspline")
+        if not self.extrapolate:
+            f.write(", do not extrapolate")
+        for i in range(self.N):
+            f.write(",\n\t\t" + BPY.FORMAT(self.X[i]) + ", " + BPY.FORMAT(self.Y[i]))
+        f.write(";\n")
+
 class CubicNaturalSplineOperator(Multiple):
     bl_label = "Cubic natural spline"
     def create_entity(self):
         return CubicNaturalSpline(self.name)
 
-#klasses[CubicNaturalSplineOperator.bl_label] = CubicNaturalSplineOperator
+klasses[CubicNaturalSplineOperator.bl_label] = CubicNaturalSplineOperator
 
 class Multilinear(Entity):
     def write(self, f):
